@@ -6,7 +6,7 @@ def main():
     indeed_results = scrape_indeed()
 
     # Scrape the second website
-    #linkedin_results = scrape_linkedin()
+    linkedin_results = scrape_linkedin()
 
 if __name__ == '__main__':
     main()

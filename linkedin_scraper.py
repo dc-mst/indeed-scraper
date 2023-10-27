@@ -29,14 +29,14 @@ def scrape_linkedin():
     # Parse the page with BeautifulSoup
     soup = BeautifulSoup(page_source, 'html.parser')
 
-    # Extract job postings' links
-    job_links = browser.find_elements(By.CSS_SELECTOR, 'ul.jobs-search__results-list li div.base-card')
+    # Extract job postings' div elements
+    job_divs = browser.find_elements(By.CSS_SELECTOR, 'ul.jobs-search__results-list li div.base-card')
 
     results = []
 
-    for link in job_links:
-        # Click on the job link to access its details
-        link.click()
+    for div in job_divs:
+        # Use JavaScript to click on the div to access its details
+        browser.execute_script("arguments[0].click();", div)
         
         # Wait for the description to be loaded and become visible
         WebDriverWait(browser, 10).until(
@@ -48,14 +48,25 @@ def scrape_linkedin():
 
         title = soup_detail.select_one('h3.base-search-card__title').text.strip()
         description = soup_detail.select_one('section.two-pane-serp-page__detail-view div.show-more-less-html__markup').text.strip()
-        href_value = link.get_attribute('href')
         
+        # Extract the href attribute from the child anchor element of the div
+        link = div.find_element(By.TAG_NAME, 'a')
+        href_value = link.get_attribute('href')
+
+        # Debug print statement
+        if href_value is None:
+            print("DEBUG: Found a div with no href. Div's outerHTML:", div.get_attribute('outerHTML'))
+
         results.append({
             'source': 'linkedin', 
             'title': title,
             'description': description,
             'href': href_value
         })
+
+        # If needed, you can go back to the original listings page using: browser.back()
+
+        
 
     # Save results to CSV
     save_to_csv(results)
