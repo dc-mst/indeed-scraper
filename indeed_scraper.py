@@ -1,28 +1,17 @@
-import os
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup, NavigableString, Tag
 from csv_writer import save_to_csv
+from selenium_config import setup_indeed
 
 def extract_with_spaces(element):
     texts = [child.get_text(separator=" ").strip() for child in element.children if isinstance(child, (NavigableString, Tag))]
     return ' '.join(texts).strip()
 
 def scrape_indeed():
-    # Determine the path to chromedriver
-    current_directory = os.path.dirname(os.path.realpath(__file__))
-    chromedriver_path = os.path.join(current_directory, 'chromedriver')
-
-    chrome_options = Options()
-    chrome_options.add_argument(f'--binary-location={chromedriver_path}')
-
-    browser = webdriver.Chrome(options=chrome_options)
-
     # URL of the job postings page
     url = 'https://it.indeed.com/jobs?q=programmatore&l=Bologna%2C+Emilia-Romagna'
 
-    # Use Selenium to access the URL
-    browser.get(url)
+    # Initialize the browser using the setup_browser function from the selenium_config module
+    browser = setup_indeed(url)
 
     # Get the page source using Selenium
     page_source = browser.page_source

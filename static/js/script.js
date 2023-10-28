@@ -106,8 +106,14 @@ $('#table').on('change', 'input[name="btSelectItem"]', function() {
 });
 
 $('#runScraperBtn').click(function() {
+    // Show the progress bar
+    $('#progressDiv').show();
+    
     $.post("/run_scraper", function(data) {
-        // Show the Bootstrap Modal
+        // Hide the progress bar
+        $('#progressDiv').hide();
+        
+        // Show the Bootstrap Modal with the success message
         $('#successModal').modal('show');
         
         // Refresh the page when the modal is closed

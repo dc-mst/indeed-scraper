@@ -1,28 +1,17 @@
-import os
 import time
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 from csv_writer import save_to_csv
+from selenium_config import setup_linkedin
 
 def scrape_linkedin():
-    # Determine the path to chromedriver
-    current_directory = os.path.dirname(os.path.realpath(__file__))
-    chromedriver_path = os.path.join(current_directory, 'chromedriver')
-
-    chrome_options = Options()
-    chrome_options.add_argument(f'--binary-location={chromedriver_path}')
-
-    browser = webdriver.Chrome(options=chrome_options)
-
     # URL of the job postings page
-    url = 'https://www.linkedin.com/jobs/search?keywords=programmatore&location=Bologna'
+    url = 'https://www.linkedin.com/jobs/search?keywords=Programmatore&location=Bologna%2C%20Emilia%20Romagna%2C%20Italia&locationId=&geoId=105768355&f_TPR=&distance=10'
 
-    # Use Selenium to access the URL
-    browser.get(url)
+    # Initialize the browser using the setup_browser function from the selenium_config module
+    browser = setup_linkedin(url)
 
     # Get the page source using Selenium
     page_source = browser.page_source
@@ -34,12 +23,11 @@ def scrape_linkedin():
     results = []
 
     job_postings = browser.find_elements(By.CSS_SELECTOR, 'ul.jobs-search__results-list li div.base-card')
-
     main_window_handle = browser.current_window_handle  # Store the main window handle
 
     # Use an index-based loop
+    for index in range(min(5, len(job_postings))):
     # for index in range(len(job_postings)):
-    for index in range(4):  # This will only process a specific number of job postings
         # Re-fetch job postings after navigating back to the main listings page
         job_postings = browser.find_elements(By.CSS_SELECTOR, 'ul.jobs-search__results-list li div.base-card')
         job = job_postings[index]
@@ -51,7 +39,7 @@ def scrape_linkedin():
         browser.execute_script("window.open('', '_blank');")
         
         # Give the browser a moment to open the new tab
-        time.sleep(3)
+        time.sleep(5)
         
         if len(browser.window_handles) > 1:  # Check if the new tab is open
             # Switch to the new tab
@@ -84,10 +72,6 @@ def scrape_linkedin():
             except Exception as e:
                 print(f"Could not expand the description for job {title}. Error: {e}")
                 results.append({
-                    'source': 'linkedin', 
-                    'title': title,
-                    'description': 'Description not available.',
-                    'href': href_value
                 })
 
             # Close the new tab

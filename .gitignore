@@ -1,0 +1,5 @@
+results.csv
+__pycache__/csv_writer.cpython-311.pyc
+__pycache__/indeed_scraper.cpython-311.pyc
+__pycache__/linkedin_scraper.cpython-311.pyc
+__pycache__/selenium_config.cpython-311.pyc
