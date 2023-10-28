@@ -37,7 +37,8 @@ def save_to_csv(data, filename="results.csv"):
     with open(filename, mode='a', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         if not file_exists:
-            writer.writerow(["Row Number", "Source", "Timestamp", "Job Title", "Description", "Href"])
+            # Modified header to include "Hidden" column
+            writer.writerow(["Row Number", "Source", "Timestamp", "Job Title", "Description", "Href", "Hidden"])
 
         row_number = get_current_row_count(filename)
         for item in data:
@@ -57,4 +58,5 @@ def save_to_csv(data, filename="results.csv"):
             timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             row_number += 1
             base_url = "https://it.indeed.com" if item['source'] == 'indeed' else ''
-            writer.writerow([row_number, item['source'], timestamp, title, desc, base_url + item['href']])
+            # Added value 0 for "Hidden" column in the writerow function
+            writer.writerow([row_number, item['source'], timestamp, title, desc, base_url + item['href'], 0])

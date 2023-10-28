@@ -1,8 +1,12 @@
 import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString, Tag
 from csv_writer import save_to_csv
+
+def extract_with_spaces(element):
+    texts = [child.get_text(separator=" ").strip() for child in element.children if isinstance(child, (NavigableString, Tag))]
+    return ' '.join(texts).strip()
 
 def scrape_indeed():
     # Determine the path to chromedriver
@@ -33,7 +37,7 @@ def scrape_indeed():
 
     for job in job_postings:
         title = job.select_one('h2').text.strip()
-        description = job.select_one('table[role="presentation"]').text.strip()
+        description = extract_with_spaces(job.select_one('table[role="presentation"]'))
         a_element = job.select_one('h2 a[href]')
         href_value = a_element['href']
         
